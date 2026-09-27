@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 手机关键：视口适配 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>生日快乐🎉</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            height:100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            overflow:hidden;
+            font-family: "Microsoft Yahei", sans-serif;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            color:#fff;
+            text-align:center;
+            padding:10px;
+        }
+        h1{
+            font-size: clamp(32px,8vw,60px);
+            text-shadow: 0 0 10px #ff8fab,0 0 20px #ff5d8f;
+            animation: pulse 2s infinite;
+            margin-bottom:20px;
+        }
+        .msg{
+            font-size: clamp(18px,4vw,24px);
+            text-shadow: 0 0 8px #72efdd;
+            margin-bottom:40px;
+        }
+        @keyframes pulse{
+            0%{transform:scale(1);opacity:0.9;}
+            50%{transform:scale(1.05);opacity:1;}
+            100%{transform:scale(1);opacity:0.9;}
+        }
+        .heart{
+            position:absolute;
+            color:#ff5d8f;
+            font-size:24px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall{
+            0%{transform:translateY(-50px) rotate(0deg);opacity:1;}
+            100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
+        }
+        canvas{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100vw;
+            height:100vh;
+            pointer-events:none;
+            z-index:-1;
+        }
+    </style>
+</head>
+<body>
+<canvas id="firework"></canvas>
+<h1>🎉 生日快乐，亲爱的朋友！🎉</h1>
+<div class="msg">愿你平安喜乐，万事顺意，岁岁无忧✨</div>
+
+<script>
+function createHeart(){
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerText = '♥';
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.animationDuration = Math.random()*3+2 + "s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),5000);
+}
+setInterval(createHeart,300);
+
+const canvas = document.getElementById('firework');
+const ctx = canvas.getContext('2d');
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize',resize);
+
+class Particle{
+    constructor(x,y,color){
+        this.x = x;
+        this.y = y;
+        this.speedX = (Math.random()-0.5)*6;
+        this.speedY = (Math.random()-0.5)*6;
+        this.alpha = 1;
+        this.color = color;
+    }
+    update(){
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= 0.015;
+    }
+    draw(){
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,3,0,Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+let particles = [];
+function createFirework(x,y){
+    const colors = ['#ff5d8f','#ffd6a5','#72efdd','#bdb2ff','#fdffb6'];
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0;i<80;i++){
+        particles.push(new Particle(x,y,c));
+    }
+}
+function animate(){
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=particles.length-1;i>=0;i--){
+        particles[i].update();
+        particles[i].draw();
+        if(particles[i].alpha <=0) particles.splice(i,1);
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+setInterval(()=>{
+    createFirework(Math.random()*canvas.width,Math.random()*canvas.height/2);
+},1200);
+</script>
+</body>
+</html>
