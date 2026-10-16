@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>你只说流星划过天空时很亮</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background: radial-gradient(ellipse at 50% 30%, #1b2a4a 0%, #0b1226 45%, #05060f 100%);
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    position: relative;
+  }
+
+  /* 星空 */
+  .sky {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .8;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .25; transform: scale(.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* 流星 */
+  .meteor {
+    position: absolute;
+    width: 160px; height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, #fff 70%, #cfe3ff 100%);
+    border-radius: 2px;
+    filter: drop-shadow(0 0 6px #fff);
+    transform: rotate(28deg);
+    opacity: 0;
+  }
+  .meteor::before { /* 流星头部光点 */
+    content: "";
+    position: absolute;
+    right: -2px; top: -2px;
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 4px rgba(255,255,255,.9);
+  }
+  @keyframes shoot {
+    0%   { opacity: 0; transform: translate(0,0) rotate(28deg); }
+    8%   { opacity: 1; }
+    35%  { opacity: 1; }
+    45%  { opacity: 0; transform: translate(-420px, 230px) rotate(28deg); }
+    100% { opacity: 0; transform: translate(-420px, 230px) rotate(28deg); }
+  }
+
+  /* 文案 */
+  .text-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #f5f7ff;
+    width: 86%;
+    z-index: 5;
+    text-shadow: 0 0 18px rgba(140,180,255,.6);
+    animation: rise 2.4s ease-out both;
+  }
+  @keyframes rise {
+    0% { opacity: 0; transform: translate(-50%, -38%); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+  }
+  .text-wrap .line {
+    font-size: 26px;
+    letter-spacing: 3px;
+    font-weight: 500;
+    line-height: 1.9;
+  }
+  .text-wrap .sub {
+    margin-top: 22px;
+    font-size: 14px;
+    color: #9db4e8;
+    letter-spacing: 2px;
+  }
+
+  /* 底部提示 */
+  .tip {
+    position: absolute;
+    bottom: 38px; left: 0; right: 0;
+    text-align: center;
+    color: rgba(255,255,255,.45);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+  <div class="sky" id="sky"></div>
+
+  <div class="text-wrap">
+    <div class="line">你只说流星划过天空时很亮</div>
+    <div class="sub">— 可把这句话换成你想说的话 —</div>
+  </div>
+
+  <div class="tip">对着流星许个愿吧</div>
+
+<script>
+  // 生成星空
+  const sky = document.getElementById('sky');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 1;
+    s.style.width = s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    sky.appendChild(s);
+  }
+
+  // 周期性生成流星
+  function makeMeteor() {
+    const m = document.createElement('div');
+    m.className = 'meteor';
+    // 从右上区域随机起点出发
+    const startX = 55 + Math.random() * 40;
+    const startY = 5 + Math.random() * 35;
+    m.style.left = startX + '%';
+    m.style.top = startY + '%';
+    const dur = (1.1 + Math.random() * 0.8).toFixed(2);
+    m.style.animation = `shoot ${dur}s linear forwards`;
+    sky.appendChild(m);
+    setTimeout(() => m.remove(), dur * 1000 + 100);
+  }
+  // 首颗稍延迟，之后随机间隔
+  setTimeout(makeMeteor, 900);
+  setInterval(() => {
+    if (Math.random() > 0.35) makeMeteor();
+  }, 1600);
+</script>
+</body>
+</html>
